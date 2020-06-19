@@ -3,18 +3,24 @@ class HeartRateController: UIViewController {
   var pulseDetector: PulseDetector!
   var filter: Filter!
   
+  //MARK: - ViewController LifeCycle
    override func viewDidLoad() {
         super.viewDidLoad()
         instantiateProperties()
     }
     
+  //MARK: - Custom Methods
   private func instantiateProperties() {
         filter = Filter()
         pulseDetector = PulseDetector()
     }
+  
+  private func startCameraCapture {
     /* ask user for camera permission, setup AVCaptureDevice.default(for: .video) object and turn the flashligh on
     also assign self as videoOutput delegate
     */
+    timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(update), userInfo: nil, repeats: true)
+  }
     
     // Convert CIImage to CGImage
     func convert(cmage:CIImage) -> UIImage {
@@ -22,6 +28,14 @@ class HeartRateController: UIViewController {
         let cgImage:CGImage = context.createCGImage(cmage, from: cmage.extent)!
         let image:UIImage = UIImage.init(cgImage: cgImage)
         return image
+    }
+  
+  //MARK: - OBJC Functions
+  
+  @objc func update() {
+        let avePeriod = pulseDetector.getAverage()
+        let pulse = 60.0 / avePeriod
+        //do something with pulse value
     }
 }
 
